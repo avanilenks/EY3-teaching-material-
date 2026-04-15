@@ -1,17 +1,82 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EYFS Curriculum Plan</title>
-  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EYFS Full Year Plan</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0f172a; color: white; font-family: sans-serif; }
+    </style>
 </head>
 <body>
-  <div id="root"></div>
+    <div id="root"></div>
 
-  <script type="text/babel" src="EYFS_FullYear_Plan.jsx"></script>
+    <script type="text/babel">
+        const { useState, useMemo, useCallback } = React;
+
+        // --- DATA ---
+        const EL = {
+            A:{s:"/æ/",w:["apple","ant","arm","axe","alligator"],sen:"A is for apple.",lc:"a",d:"two slanting lines meeting at top with a belt",ld:"a circle with a stick on the right"},
+            B:{s:"/b/",w:["ball","bear","banana","book","butterfly"],sen:"B is for ball.",lc:"b",d:"a tall line with two bumps on the right",ld:"a stick with one bump at bottom right"},
+            C:{s:"/k/",w:["cat","cup","car","cookie","cloud"],sen:"C is for cat.",lc:"c",d:"a big open curve like a crescent moon",ld:"a small open curve"},
+            D:{s:"/d/",w:["dog","duck","door","drum","deer"],sen:"D is for dog.",lc:"d",d:"a tall line with a big round tummy on the right",ld:"a small circle with a tall line on the right"},
+            E:{s:"/ɛ/",w:["egg","elephant","elf","exit","elbow"],sen:"E is for egg.",lc:"e",d:"a tall line with three arms reaching right",ld:"a small curve with a middle belt"},
+            F:{s:"/f/",w:["fish","flower","frog","fan","fox"],sen:"F is for fish.",lc:"f",d:"a tall line with two arms — no bottom arm",ld:"a hook at top with a crossbar"},
+            G:{s:"/g/",w:["goat","grape","girl","gift","green"],sen:"G is for goat.",lc:"g",d:"a C with a little shelf inside",ld:"a circle with a shelf and a tail below"},
+            H:{s:"/h/",w:["hat","hen","house","honey","hand"],sen:"H is for hat.",lc:"h",d:"two tall lines with a bridge in the middle",ld:"a stick, then an arch, then a stick"},
+            I:{s:"/ɪ/",w:["insect","igloo","ink","ill","itch"],sen:"I is for insect.",lc:"i",d:"three lines — top, tall middle, bottom",ld:"a single line with a dot on top"},
+            J:{s:"/dʒ/",w:["jam","jar","jump","jungle","jacket"],sen:"J is for jam.",lc:"j",d:"a tall line with a hook at bottom",ld:"a hook with a dot on top"},
+            K:{s:"/k/",w:["kite","king","key","kitten","kangaroo"],sen:"K is for kite.",lc:"k",d:"a tall line with two arms — one up-right, one down-right",ld:"like big K but smaller"},
+            L:{s:"/l/",w:["lion","leaf","lemon","lamp","lizard"],sen:"L is for lion.",lc:"l",d:"a tall line with a foot turning right",ld:"a single tall line"},
+            M:{s:"/m/",w:["moon","monkey","milk","mango","mouse"],sen:"M is for moon.",lc:"m",d:"two tall lines with a V-shape between them",ld:"two rounded arches side by side"},
+            N:{s:"/n/",w:["nest","nut","nose","night","needle"],sen:"N is for nest.",lc:"n",d:"two tall lines connected by a diagonal",ld:"one rounded arch"},
+            O:{s:"/ɒ/",w:["orange","owl","ox","ocean","otter"],sen:"O is for orange.",lc:"o",d:"a big round circle",ld:"a small circle"},
+            P:{s:"/p/",w:["pen","pig","pot","parrot","purple"],sen:"P is for pen.",lc:"p",d:"a tall line with one bump at top right",ld:"a stick with a ball at bottom right"},
+            Q:{s:"/kw/",w:["queen","quilt","quiz","quiet","quack"],sen:"Q is for queen.",lc:"q",d:"a circle with a tiny tail at bottom right",ld:"a circle with a tail going down-right"},
+            R:{s:"/r/",w:["rabbit","rain","red","ring","river"],sen:"R is for rabbit.",lc:"r",d:"a P with a leg kicking right",ld:"a small arch with a short leg"},
+            S:{s:"/s/",w:["sun","star","snake","soap","spoon"],sen:"S is for sun.",lc:"s",d:"a wiggly path curving twice",ld:"a small wiggly s"},
+            T:{s:"/t/",w:["tiger","tree","toy","train","tomato"],sen:"T is for tiger.",lc:"t",d:"a tall line with a hat on top",ld:"a small cross with a slight hook"},
+            U:{s:"/ʌ/",w:["umbrella","under","up","uncle","ugly"],sen:"U is for umbrella.",lc:"u",d:"a deep curve connecting two upward lines",ld:"a small cup shape"},
+            V:{s:"/v/",w:["van","violet","vase","vine","village"],sen:"V is for van.",lc:"v",d:"two lines meeting at a point at the bottom",ld:"a small v"},
+            W:{s:"/w/",w:["water","wind","wolf","well","worm"],sen:"W is for water.",lc:"w",d:"two V shapes side by side",ld:"a small w"},
+            X:{s:"/ks/",w:["x-ray","xylophone","fox","box","mix"],sen:"X is for x-ray.",lc:"x",d:"two diagonal lines crossing in the middle",ld:"a small x cross"},
+            Y:{s:"/j/",w:["yak","yarn","yell","yoga","yellow"],sen:"Y is for yak.",lc:"y",d:"two lines meeting in the middle then one line going down",ld:"a small y with a descending tail"},
+            Z:{s:"/z/",w:["zebra","zero","zoom","zigzag","zoo"],sen:"Z is for zebra.",lc:"z",d:"top line right, diagonal down-left, bottom line right",ld:"a small z"},
+        };
+
+        function App() {
+            return (
+                <div className="p-8 max-w-4xl mx-auto">
+                    <h1 className="text-3xl font-bold mb-4 text-amber-500">EYFS Full Year Plan</h1>
+                    <div className="bg-slate-800 p-6 rounded-xl shadow-lg border border-slate-700">
+                        <p className="text-lg text-slate-300 mb-6">Welcome to your interactive curriculum dashboard! Your GitHub site is now active. This is a preview of the Letter Recognition and Math components.</p>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {Object.keys(EL).slice(0, 6).map(key => (
+                                <div key={key} className="bg-slate-700 p-4 rounded-lg border border-slate-600">
+                                    <h2 className="text-xl font-bold text-white mb-2">Letter {key}</h2>
+                                    <p className="text-sm text-slate-300"><strong>Sound:</strong> {EL[key].s}</p>
+                                    <p className="text-sm text-slate-300"><strong>Words:</strong> {EL[key].w.join(", ")}</p>
+                                    <p className="italic text-amber-400 mt-2">"{EL[key].sen}"</p>
+                                </div>
+                            ))}
+                        </div>
+                        
+                        <div className="mt-8 p-4 bg-amber-900/30 rounded-lg border border-amber-700/50">
+                            <h3 className="text-lg font-bold text-amber-500 mb-2">Next Milestone: May 1st</h3>
+                            <p className="text-sm text-slate-200">The curriculum officially starts in May. Use the dashboard to track your daughter's progress across English, Math, Telugu, and Hindi.</p>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
 </body>
 </html>
